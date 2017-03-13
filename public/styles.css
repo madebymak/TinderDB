@@ -1,0 +1,18 @@
+
+.container {
+  padding-top: 5%;
+  max-width: 75%;
+}
+
+.brd {
+  border: 0px solid red;
+}
+
+img {
+  height: 200px;
+  width: 200px;
+}
+
+.box {
+  text-align: center;
+}
