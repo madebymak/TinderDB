@@ -13,22 +13,26 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
   <link rel="stylesheet" type="text/css" href="styles.css">
+
+  <%- include ../views/partials/_header.ejs %>
+
 </head>
 
 <body>
-  <div class="container-fluid container">
+  <div class="container-fluid container brd">
     <div class="row">
-      <% Object.keys(urls).forEach(function(key) {%>
-          <div class="col-sm-3 col-md-4 brd box">
-            <p><img src="<%= urls[key].photos[0].url %>"><br>
-              <%= urls[key].name %></br>
-              <!-- Distance: <%= urls[key].distance_mi %></br>
-              Last online: <%= urls[key].ping_time %></br>
-              Age: <%= urls[key].birth_date %></br>
-              ID: <%= urls[key]._id %></br> -->
-            </p>
-          </div>
-          <% }); %>
+      <% Object.keys(profiles).forEach(function(key) {%>
+        <div class="col-sm-4 col-md-4 brd box">
+          <p><img src="<%= profiles[key].photos[0].url %>"><br>
+            <%= profiles[key].name %>
+              </br>
+              <!-- Distance: <%= profiles[key].distance_mi %></br>
+              Last online: <%= profiles[key].ping_time %></br>
+              Age: <%= profiles[key].birth_date %></br>
+              ID: <%= profiles[key]._id %></br> -->
+          </p>
+        </div>
+        <% }); %>
     </div>
   </div>
 

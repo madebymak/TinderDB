@@ -11,15 +11,24 @@ var fbInfo = require('./fb_auth.js');
 var fbUserId  = fbInfo.userId;
 var fbToken = fbInfo.token;
 
-// var urlDatabase = require('./data'); //mock json data
-var urlDatabase = [];
+//Mock data
+// var tinderData = require('./data');
+// var userProfile = tinderData.userProfile;
+// var recommendations = tinderData.recommendations;
+
+var userProfile = [];
+var recommendations = [];
 
 client.authorize(
   fbToken,
   fbUserId,
   function() {
-    client.getRecommendations(10, function(error, data) {
-      urlDatabase = data.results;
+    client.getRecommendations(10, function(err, data) {
+      recommendations = data.results;
+    });
+
+    client.getAccount(function(err, data) {
+      userProfile = data.user;
     });
   }
 );
@@ -29,7 +38,10 @@ app.set("view engine", "ejs");
 app.use(express.static(__dirname + '/public'));
 
 app.get("/", (req, res) => {
-    let templateVars = { urls: urlDatabase };
+    let templateVars = {
+      user: userProfile,
+      profiles: recommendations
+    };
     res.render("index", templateVars);
 });
 
