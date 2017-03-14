@@ -18,6 +18,7 @@ var fbToken = fbInfo.token;
 
 var userProfile = [];
 var recommendations = [];
+var alreadyMatched = [];
 
 client.authorize(
   fbToken,
@@ -30,6 +31,11 @@ client.authorize(
     client.getAccount(function(err, data) {
       userProfile = data.user;
     });
+
+    client.getHistory(function(err, data) {
+       alreadyMatched = data.matches;
+    });
+
   }
 );
 
@@ -51,6 +57,14 @@ app.get("/show/:id", (req, res) => {
     test: recommendations
   };
   res.render("show", templateVars);
+});
+
+app.get("/matches", (req, res) => {
+    let templateVars = {
+      user: userProfile,
+      matches: alreadyMatched
+    };
+    res.render("matches", templateVars);
 });
 
 app.listen(PORT, () => {
