@@ -11,7 +11,7 @@ var fbInfo = require('./fb_auth.js');
 var fbUserId  = fbInfo.userId;
 var fbToken = fbInfo.token;
 
-//Mock data
+// Mock data
 // var tinderData = require('./data');
 // var userProfile = tinderData.userProfile;
 // var recommendations = tinderData.recommendations;
@@ -43,6 +43,14 @@ app.get("/", (req, res) => {
       profiles: recommendations
     };
     res.render("index", templateVars);
+});
+
+app.get("/show/:id", (req, res) => {
+  let templateVars = {
+    pos: req.params.id,
+    test: recommendations
+  };
+  res.render("show", templateVars);
 });
 
 app.listen(PORT, () => {
