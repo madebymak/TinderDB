@@ -11,31 +11,41 @@ var fbInfo = require('./fb_auth.js');
 var fbUserId  = fbInfo.userId;
 var fbToken = fbInfo.token;
 
-// Mock data
+// // Mock data
 // var tinderData = require('./data');
 // var userProfile = tinderData.userProfile;
-// var recommendations = tinderData.recommendations;
+// var tinderProfile =tinderData.recommendations;
 
+
+//Tinder Call
 var userProfile = [];
 var recommendations = [];
-var alreadyMatched = [];
+var list = [];
+var matches = [];
 
 client.authorize(
   fbToken,
   fbUserId,
   function() {
-    client.getRecommendations(10, function(err, data) {
-      recommendations = data.results;
-    });
+
+    //calls tinder API 3 times for profiles
+    for (var i = 0; i < 3; i++) {
+      client.getRecommendations(10, function(err, data) {
+        recommendations = data.results;
+        var f = data.results;
+        for (var j = 0; j < f.length; j++) {
+          list.push(f[j]);
+        }
+      });
+    }
+
+    // client.getRecommendations(10, function(err, data) {
+    //   recommendations = data.results;
+    // });
 
     client.getAccount(function(err, data) {
       userProfile = data.user;
     });
-
-    client.getHistory(function(err, data) {
-       alreadyMatched = data.matches;
-    });
-
   }
 );
 
@@ -44,11 +54,13 @@ app.set("view engine", "ejs");
 app.use(express.static(__dirname + '/public'));
 
 app.get("/", (req, res) => {
-    let templateVars = {
-      user: userProfile,
-      profiles: recommendations
-    };
-    res.render("index", templateVars);
+  console.log('rec length:',list.length);
+  let templateVars = {
+    user: userProfile,
+    profiles: recommendations
+  };
+
+  res.render("index", templateVars);
 });
 
 app.get("/show/:id", (req, res) => {
@@ -60,9 +72,36 @@ app.get("/show/:id", (req, res) => {
 });
 
 app.get("/matches", (req, res) => {
+
+  /// Checks for matches
+  var counts = [];
+  list.forEach(function(x) {
+    counts[x.name] = (counts[x.name] || 0)+1;
+  });
+
+  var sortable = [];
+  for (var x in counts) {
+    sortable.push({
+      'name' : x,
+      'count' : counts[x]
+    })
+  };
+
+  var alreadyMatched = sortable.filter(function(val) {
+    return val.count >= 3;
+  });
+
+  for (var i = 0; i < alreadyMatched.length; i++) {
+    recommendations.forEach(function(x){
+      if (alreadyMatched[i].name === x.name) {
+        matches.push(x);
+      };
+    })
+  }
+
     let templateVars = {
       user: userProfile,
-      matches: alreadyMatched
+      matches: matches
     };
     res.render("matches", templateVars);
 });
