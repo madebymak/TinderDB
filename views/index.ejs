@@ -21,6 +21,9 @@
 <body>
   <div class="container-fluid container brd">
     <div class="row">
+      <h3>Browse profiles:</h3>
+    </div>
+
       <% Object.keys(profiles).forEach(function(key) {%>
           <div class="col-sm-4 col-md-4 brd box">
             <p><a href="show/<%= key %>"><img src="<%= profiles[key].photos[0].url %>"></a><br>

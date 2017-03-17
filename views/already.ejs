@@ -21,10 +21,13 @@
 <body>
   <div class="container-fluid container brd">
     <div class="row">
+      <h3>People who already liked you:</h3>
+    </div>
+    <div class="row">
       <% Object.keys(matches).forEach(function(key) {%>
         <div class="col-sm-4 col-md-4 brd box">
           <p><img src="<%= matches[key].photos[0].url%>"><br>
-            <%= matches[key].name %>
+            <%= matches[key].name %> (<%= matches[key].age %>)
               </br>
               <!-- Distance: <%= matches[key].distance_mi %></br>
                 Last online: <%= matches[key].ping_time %></br>
