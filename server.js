@@ -31,10 +31,15 @@ client.authorize(
     //calls tinder API 3 times for profiles
     for (var i = 0; i < 3; i++) {
       client.getRecommendations(10, function(err, data) {
-        // recommendations = data.results;
         var tinderResults = data.results;
         for (var j = 0; j < tinderResults.length; j++) {
-          // list.push(tinderResults[j]);
+
+          //Checks to see if profile id already exists before pushing
+          var found = recommendations.some(function (el) {
+            return el.id === tinderResults[j]._id;
+          });
+
+          if (!found) {
             recommendations.push({
               name : tinderResults[j].name,
               age: getAge(tinderResults[j].birth_date),
@@ -44,6 +49,7 @@ client.authorize(
               distance_mi: tinderResults[j].distance_mi,
               id: tinderResults[j]._id,
             });
+          }
         }
       });
     };
@@ -72,7 +78,7 @@ app.set("view engine", "ejs");
 app.use(express.static(__dirname + '/public'));
 
 app.get("/", (req, res) => {
-  // console.log('number of profiles:',list.length);
+  console.log('number of profiles:',recommendations.length);
   let templateVars = {
     user: userProfile,
     profiles: recommendations
