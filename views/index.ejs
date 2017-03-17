@@ -24,7 +24,7 @@
       <% Object.keys(profiles).forEach(function(key) {%>
           <div class="col-sm-4 col-md-4 brd box">
             <p><a href="show/<%= key %>"><img src="<%= profiles[key].photos[0].url %>"></a><br>
-              <%= profiles[key].name %>
+              <%= profiles[key].name %> (<%= profiles[key].age %>)
                 </br>
                 <!-- Distance: <%= profiles[key].distance_mi %></br>
                 Last online: <%= profiles[key].ping_time %></br>

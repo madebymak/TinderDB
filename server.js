@@ -31,13 +31,22 @@ client.authorize(
     //calls tinder API 3 times for profiles
     for (var i = 0; i < 3; i++) {
       client.getRecommendations(10, function(err, data) {
-        recommendations = data.results;
-        var f = data.results;
-        for (var j = 0; j < f.length; j++) {
-          list.push(f[j]);
+        // recommendations = data.results;
+        var tinderResults = data.results;
+        for (var j = 0; j < tinderResults.length; j++) {
+          // list.push(tinderResults[j]);
+            recommendations.push({
+              name : tinderResults[j].name,
+              age: getAge(tinderResults[j].birth_date),
+              bio: tinderResults[j].bio,
+              photos: tinderResults[j].photos,
+              ping_time: tinderResults[j].ping_time,
+              distance_mi: tinderResults[j].distance_mi,
+              id: tinderResults[j]._id,
+            });
         }
       });
-    }
+    };
 
     // client.getRecommendations(10, function(err, data) {
     //   recommendations = data.results;
@@ -49,12 +58,21 @@ client.authorize(
   }
 );
 
+function getAge(dob){
+  let todaysDate = new Date();
+  let profileDate = new Date(dob);
+  var timeDiff = Math.abs(todaysDate.getTime() - profileDate.getTime());
+  var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+  var diffYears = Math.floor(diffDays/365)
+  return diffYears
+}
+
 app.set("view engine", "ejs");
 
 app.use(express.static(__dirname + '/public'));
 
 app.get("/", (req, res) => {
-  console.log('number of profiles:',list.length);
+  // console.log('number of profiles:',list.length);
   let templateVars = {
     user: userProfile,
     profiles: recommendations
