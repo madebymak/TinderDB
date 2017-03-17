@@ -71,7 +71,7 @@ app.get("/show/:id", (req, res) => {
   res.render("show", templateVars);
 });
 
-app.get("/matches", (req, res) => {
+app.get("/already", (req, res) => {
 
   if (alreadySwipedRight.length === 0) {
     /// Checks for matches
@@ -105,7 +105,7 @@ app.get("/matches", (req, res) => {
       user: userProfile,
       matches: alreadySwipedRight
     };
-    res.render("matches", templateVars);
+    res.render("already", templateVars);
 });
 
 app.listen(PORT, () => {
