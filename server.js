@@ -21,7 +21,7 @@ var fbToken = fbInfo.token;
 var userProfile = [];
 var recommendations = [];
 var list = [];
-var matches = [];
+var alreadySwipedRight = [];
 
 client.authorize(
   fbToken,
@@ -54,7 +54,7 @@ app.set("view engine", "ejs");
 app.use(express.static(__dirname + '/public'));
 
 app.get("/", (req, res) => {
-  console.log('rec length:',list.length);
+  console.log('number of profiles:',list.length);
   let templateVars = {
     user: userProfile,
     profiles: recommendations
@@ -73,35 +73,37 @@ app.get("/show/:id", (req, res) => {
 
 app.get("/matches", (req, res) => {
 
-  /// Checks for matches
-  var counts = [];
-  list.forEach(function(x) {
-    counts[x.name] = (counts[x.name] || 0)+1;
-  });
+  if (alreadySwipedRight.length === 0) {
+    /// Checks for matches
+    var counts = [];
+    list.forEach(function(x) {
+      counts[x.name] = (counts[x.name] || 0)+1;
+    });
 
-  var sortable = [];
-  for (var x in counts) {
-    sortable.push({
-      'name' : x,
-      'count' : counts[x]
-    })
-  };
+    var sortable = [];
+    for (var x in counts) {
+      sortable.push({
+        'name' : x,
+        'count' : counts[x]
+      })
+    };
 
-  var alreadyMatched = sortable.filter(function(val) {
-    return val.count >= 3;
-  });
+    var alreadyMatched = sortable.filter(function(val) {
+      return val.count >= 3;
+    });
 
-  for (var i = 0; i < alreadyMatched.length; i++) {
-    recommendations.forEach(function(x){
-      if (alreadyMatched[i].name === x.name) {
-        matches.push(x);
-      };
-    })
+    for (var i = 0; i < alreadyMatched.length; i++) {
+      recommendations.forEach(function(x){
+        if (alreadyMatched[i].name === x.name) {
+          alreadySwipedRight.push(x);
+        };
+      })
+    }
   }
 
     let templateVars = {
       user: userProfile,
-      matches: matches
+      matches: alreadySwipedRight
     };
     res.render("matches", templateVars);
 });
