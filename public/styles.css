@@ -22,3 +22,13 @@ img {
   margin: 10px;
   width: 100px;
 }
+
+.profile-img {
+  height: 400px;
+  width: 400px;
+}
+
+.profile-gallery {
+  height: 400px;
+  width: 400px;
+}

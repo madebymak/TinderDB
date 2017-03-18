@@ -115,6 +115,7 @@ app.get("/", (req, res) => {
 
 app.get("/show/:id", (req, res) => {
   let templateVars = {
+    user: userProfile,
     pos: req.params.id,
     test: recommendations
   };
