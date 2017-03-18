@@ -29,7 +29,7 @@ client.authorize(
   function() {
 
     //calls tinder API 3 times for profiles
-    for (var i = 0; i < 3; i++) {
+    for (var i = 0; i < 5; i++) {
       client.getRecommendations(10, function(err, data) {
         var tinderResults = data.results;
         for (var j = 0; j < tinderResults.length; j++) {
@@ -140,7 +140,7 @@ app.get("/already", (req, res) => {
     };
 
     var alreadyMatched = sortable.filter(function(val) {
-      return val.count >= 3;
+      return val.count >= 5;
     });
 
     for (var i = 0; i < alreadyMatched.length; i++) {
