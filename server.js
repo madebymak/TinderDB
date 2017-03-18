@@ -38,7 +38,7 @@ client.authorize(
             age: getAge(tinderResults[j].birth_date),
             bio: tinderResults[j].bio,
             photos: tinderResults[j].photos,
-            ping_time: tinderResults[j].ping_time,
+            ping_time: getLastOnline(tinderResults[j].ping_time),
             distance_mi: tinderResults[j].distance_mi,
             id: tinderResults[j]._id,
           });
@@ -54,7 +54,7 @@ client.authorize(
               age: getAge(tinderResults[j].birth_date),
               bio: tinderResults[j].bio,
               photos: tinderResults[j].photos,
-              ping_time: tinderResults[j].ping_time,
+              ping_time: getLastOnline(tinderResults[j].ping_time),
               distance_mi: tinderResults[j].distance_mi,
               id: tinderResults[j]._id,
             });
@@ -82,6 +82,23 @@ function getAge(dob){
   return diffYears
 }
 
+function getLastOnline(time) {
+  let result;
+  let currentTime = new Date();
+  let lastActivity = new Date(time);
+  var timeDiff = Math.abs(currentTime.getTime() - lastActivity.getTime());
+  var convertedTime = Math.floor(timeDiff/(1000 * 60 * 60));
+
+  if (convertedTime > 24) {
+    result = 'More than 24 hours ago.';
+  } else if ( convertedTime <= 1) {
+    result = 'Less than an hour ago.';
+  } else {
+    result = convertedTime + ' hours ago.'
+  }
+  return result;
+}
+
 app.set("view engine", "ejs");
 
 app.use(express.static(__dirname + '/public'));
@@ -98,6 +115,7 @@ app.get("/", (req, res) => {
 
 app.get("/show/:id", (req, res) => {
   let templateVars = {
+    user: userProfile,
     pos: req.params.id,
     test: recommendations
   };

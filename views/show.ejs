@@ -1,18 +1,47 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title></title>
-  </head>
-  <body>
-    <img src="<%= test[pos].photos[0].url %>" height="400" width="400"></br>
-    <%= test[pos].name %><br>
-      Distance: <%= test[pos].distance_mi %></br>
-      Last online: <%= test[pos].ping_time %></br>
-      Age: <%= test[pos].age %></br>
-      Bio: <%= test[pos].bio %></br>
-      Like | Pass </br>
-      <a href = "/">Back</a>
 
-  </body>
+<head>
+  <meta charset="utf-8">
+  <title>TinderDB</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+  <link rel="stylesheet" type="text/css" href="../styles.css">
+
+  <%- include ../views/partials/_header.ejs %>
+
+</head>
+<body>
+  <div class="container-fluid container brd">
+    <div class="row">
+      <div class="col-sm-12 col-md-12 brd box">
+        <img class='profile-img' src="<%= test[pos].photos[0].url %>">
+      </div>
+      <div class="row">
+        <% Object.keys(test[pos].photos).forEach(function(key) {%>
+          <div class="col-sm-4 col-md-4 brd">
+            <img class=".profile-gallery" src="<%= test[pos].photos[key].url%>"><br>
+          </div>
+          <% }); %>
+      </div>
+      <div class="col-sm-12 col-md-12 brd">
+        <%= test[pos].name %><br>
+        Distance: <%= test[pos].distance_mi %> miles away.</br>
+        Last activity: <%= test[pos].ping_time %></br>
+        Age: <%= test[pos].age %></br>
+        Bio: <%= test[pos].bio %></br>
+        Like | Pass </br>
+        <a href = "/">Back</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+
 </html>
