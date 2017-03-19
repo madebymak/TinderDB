@@ -21,7 +21,7 @@ var fbToken = fbInfo.token;
 var userProfile = [];
 var recommendations = [];
 var list = [];
-var alreadySwipedRight = [];
+var sortedList = [];
 
 client.authorize(
   fbToken,
@@ -41,6 +41,7 @@ client.authorize(
             ping_time: getLastOnline(tinderResults[j].ping_time),
             distance_mi: tinderResults[j].distance_mi,
             id: tinderResults[j]._id,
+            likes_you: ''
           });
 
           //Checks to see if profile id already exists before pushing
@@ -57,6 +58,7 @@ client.authorize(
               ping_time: getLastOnline(tinderResults[j].ping_time),
               distance_mi: tinderResults[j].distance_mi,
               id: tinderResults[j]._id,
+              likes_you: ''
             });
           }
         }
@@ -105,9 +107,56 @@ app.use(express.static(__dirname + '/public'));
 
 app.get("/", (req, res) => {
   console.log('number of profiles:',recommendations.length);
+
+  if (sortedList.length === 0) {
+    /// Checks for matches
+    var counts = [];
+    list.forEach(function(x) {
+      counts[x.id] = (counts[x.id] || 0)+1;
+    });
+
+    var sortable = [];
+    for (var x in counts) {
+      sortable.push({
+        'id' : x,
+        'count' : counts[x]
+      })
+    };
+
+    var topRec = sortable.filter(function(val) {
+      return val.count >= 3;
+    });
+
+    // console.log(topRec);
+
+    var alreadyMatched = sortable.sort(function (a,b) {
+      return b.count - a.count;
+    });
+
+    // console.log(alreadyMatched);
+
+    for (var i = 0; i < alreadyMatched.length; i++) {
+      recommendations.forEach(function(x) {
+
+        if (alreadyMatched[i].id === x.id) {
+          sortedList.push(x);
+        };
+
+      })
+    }
+
+    for (var p = 0; p < topRec.length; p++) {
+      sortedList.forEach(function(n) {
+        if (topRec[p].id === n.id) {
+          n.likes_you = '*';
+        }
+      })
+    }
+  }
+
   let templateVars = {
     user: userProfile,
-    profiles: recommendations
+    profiles: sortedList
   };
 
   res.render("index", templateVars);
@@ -117,46 +166,9 @@ app.get("/show/:id", (req, res) => {
   let templateVars = {
     user: userProfile,
     pos: req.params.id,
-    test: recommendations
+    test: sortedList
   };
   res.render("show", templateVars);
-});
-
-app.get("/already", (req, res) => {
-
-  if (alreadySwipedRight.length === 0) {
-    /// Checks for matches
-    var counts = [];
-    list.forEach(function(x) {
-      counts[x.name] = (counts[x.name] || 0)+1;
-    });
-
-    var sortable = [];
-    for (var x in counts) {
-      sortable.push({
-        'name' : x,
-        'count' : counts[x]
-      })
-    };
-
-    var alreadyMatched = sortable.filter(function(val) {
-      return val.count >= 5;
-    });
-
-    for (var i = 0; i < alreadyMatched.length; i++) {
-      recommendations.forEach(function(x){
-        if (alreadyMatched[i].name === x.name) {
-          alreadySwipedRight.push(x);
-        };
-      })
-    }
-  }
-
-    let templateVars = {
-      user: userProfile,
-      matches: alreadySwipedRight
-    };
-    res.render("already", templateVars);
 });
 
 app.listen(PORT, () => {
