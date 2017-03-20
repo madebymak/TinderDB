@@ -102,6 +102,15 @@ function getLastOnline(time) {
   return result;
 }
 
+function findAndRemove(array, property, value) {
+  array.forEach(function(result, index) {
+    if(result[property] === value) {
+      //Remove from array
+      array.splice(index, 1);
+    }
+  });
+}
+
 app.set("view engine", "ejs");
 
 app.use(express.static(__dirname + '/public'));
@@ -168,6 +177,7 @@ app.get("/", (req, res) => {
 
 app.post('/', (req, res) => {
   console.log('body:', req.body.pass);
+  findAndRemove(sortedList, 'id', req.body.pass);
   res.redirect('/');
 });
 
