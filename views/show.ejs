@@ -20,8 +20,35 @@
 <body>
   <div class="container-fluid container brd">
     <div class="row">
+      <div class="col-sm-12 col-md-12 brd">
+        <a href = "/"> << Go Back</a>
+      </div>
+    <div class="row">
       <div class="col-sm-12 col-md-12 brd box">
         <img class='profile-img' src="<%= test[pos].photos[0].url %>">
+      </div>
+      <div class="row">
+        <div class="col-sm-6 col-md-6 brd box">
+        <h1> X </h1>
+        </div>
+        <div class="col-sm-6 col-md-6 brd box">
+        <h1> <3 </h1>
+        </div>
+    </div>
+
+      <div class="row">
+        <div class="col-sm-12 col-md-12 brd">
+          <%= test[pos].name %><br>
+          Distance: <%= test[pos].distance_mi %> miles away.</br>
+          Last activity: <%= test[pos].ping_time %></br>
+          Age: <%= test[pos].age %></br>
+          Bio: <%= test[pos].bio %></br>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-12 brd">
+          Photos:
+        </div>
       </div>
       <div class="row">
         <% Object.keys(test[pos].photos).forEach(function(key) {%>
@@ -29,15 +56,6 @@
             <img class=".profile-gallery" src="<%= test[pos].photos[key].url%>"><br>
           </div>
           <% }); %>
-      </div>
-      <div class="col-sm-12 col-md-12 brd">
-        <%= test[pos].name %><br>
-        Distance: <%= test[pos].distance_mi %> miles away.</br>
-        Last activity: <%= test[pos].ping_time %></br>
-        Age: <%= test[pos].age %></br>
-        Bio: <%= test[pos].bio %></br>
-        Like | Pass </br>
-        <a href = "/">Back</a>
       </div>
     </div>
   </div>
