@@ -1,6 +1,7 @@
 var express = require("express");
 var app = express();
 var PORT = process.env.PORT || 8080; // default port 8080
+var bodyParser = require('body-parser');
 
 //Tinder Client
 var tinder = require('./tinder');
@@ -104,6 +105,9 @@ function getLastOnline(time) {
 app.set("view engine", "ejs");
 
 app.use(express.static(__dirname + '/public'));
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 
 app.get("/", (req, res) => {
   console.log('number of profiles:',recommendations.length);
@@ -160,6 +164,11 @@ app.get("/", (req, res) => {
   };
 
   res.render("index", templateVars);
+});
+
+app.post('/', (req, res) => {
+  console.log('body:', req.body.pass);
+  res.redirect('/');
 });
 
 app.get("/show/:id", (req, res) => {

@@ -29,10 +29,16 @@
       </div>
       <div class="row">
         <div class="col-sm-6 col-md-6 brd box">
-        <h1> X </h1>
+          <form method="post" action="/">
+            <input type="hidden" name='pass' value="<%= test[pos].id %>">
+            <input type="submit" value="x">
+          </form>
         </div>
         <div class="col-sm-6 col-md-6 brd box">
-        <h1> <3 </h1>
+          <form method="post" action="/">
+            <input type="hidden" name='like' value="<%= test[pos].id %>">
+            <input type="submit" value="<3">
+          </form>
         </div>
     </div>
 
