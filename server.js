@@ -24,10 +24,7 @@ var recommendations = [];
 var list = [];
 var sortedList = [];
 
-client.authorize(
-  fbToken,
-  fbUserId,
-  function() {
+client.authorize( fbToken, fbUserId, function() {
 
     //calls tinder API 3 times for profiles
     for (var i = 0; i < 5; i++) {
@@ -102,7 +99,7 @@ function getLastOnline(time) {
   return result;
 }
 
-function findAndRemove(array, property, value) {
+function swipeAndRemove(array, property, value) {
   array.forEach(function(result, index) {
     if(result[property] === value) {
       //Remove from array
@@ -140,7 +137,7 @@ app.get("/", (req, res) => {
       return val.count >= 3;
     });
 
-    // console.log(topRec);
+    console.log(topRec);
 
     var alreadyMatched = sortable.sort(function (a,b) {
       return b.count - a.count;
@@ -175,10 +172,34 @@ app.get("/", (req, res) => {
   res.render("index", templateVars);
 });
 
-app.post('/', (req, res) => {
-  console.log('body:', req.body.pass);
-  findAndRemove(sortedList, 'id', req.body.pass);
-  res.redirect('/');
+app.post('/pass', (req, res) => {
+  var profileId = req.body.id;
+
+  client.authorize( fbToken, fbUserId, function() {
+    client.pass(profileId, function(err, data) {
+      console.log(data.status);
+      if (data.status === 200) {
+        swipeAndRemove(sortedList, 'id', profileId);
+        console.log('passed:', profileId);
+        res.redirect('/');
+      }
+    })
+  });
+});
+
+app.post('/like', (req, res) => {
+  var profileId = req.body.id;
+
+  client.authorize( fbToken, fbUserId, function() {
+    client.like(profileId, function(err, data) {
+      // console.log(data);
+      if (data) {
+        swipeAndRemove(sortedList, 'id', profileId);
+        console.log('liked:', profileId);
+        res.redirect('/');
+      };
+    });
+  });
 });
 
 app.get("/show/:id", (req, res) => {
@@ -189,6 +210,8 @@ app.get("/show/:id", (req, res) => {
   };
   res.render("show", templateVars);
 });
+
+
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
