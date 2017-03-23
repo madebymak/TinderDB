@@ -211,6 +211,13 @@ app.get("/show/:id", (req, res) => {
   res.render("show", templateVars);
 });
 
+app.get("/settings", (req, res) => {
+  let templateVars = {
+    user: userProfile
+  };
+  res.render("settings", templateVars);
+});
+
 
 
 app.listen(PORT, () => {
