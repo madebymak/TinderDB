@@ -19,21 +19,22 @@
 </head>
 
 <body>
-  <div class="container-fluid container brd">
-    <div class="row">
-      <h3>Browse profiles:</h3>
-    </div>
-
-      <% Object.keys(profiles).forEach(function(key) {%>
-          <div class="col-sm-4 col-md-4 brd box">
-            <p><a href="show/<%= key %>"><img src="<%= profiles[key].photos[0].url %>"></a><br>
-              <%= profiles[key].name %> (<%= profiles[key].age %>) <%= profiles[key].likes_you %>
-                </br>
-            </p>
-          </div>
-        <% }); %>
-    </div>
+<div class="container-fluid container brd">
+  <div class="row">
+    <h3>Browse profiles:</h3>
+    ( * indicates a potential match)
   </div>
+  <div class="row">
+    <% Object.keys(profiles).forEach(function(key) {%>
+      <div class="col-sm-4 col-md-4 brd box">
+        <p>
+          <a href="show/<%= key %>"><img src="<%= profiles[key].photos[0].url %>"></a><br>
+          <%= profiles[key].name %> (<%= profiles[key].age %>) <%= profiles[key].likes_you %>
+        </p>
+      </div>
+      <% }); %>
+  </div>
+</div>
 
 </body>
 

@@ -20,11 +20,11 @@
 
 <% var gender; %>
 <% if (user.gender_filter === 1) { %>
-  <% gender = 'female'; %>
+  <% gender = 'females'; %>
 <% } else if (user.gender_filter === 2) { %>
-  <% gender = 'male'; %>
+  <% gender = 'males'; %>
 <% } else { %>
-  <% gender = 'female and male'; %>
+  <% gender = 'females and males'; %>
 <% } %>
 
 <body>
@@ -41,6 +41,13 @@
         Looking For: <%= gender %> </br>
         Age Range: <%= user.age_filter_min %> - <%= user.age_filter_max %> yrs </br>
         Max Distance: <%= user.distance_filter %> mi </br>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12 col-md-12 brd">
+        <h3>Change Location:</h3>
+        * Please note that you may need to wait 24 hours after changing locations for the potential match feature to work correctly. *</br>
+        New Location: longitude latitutde
       </div>
     </div>
 </body>
