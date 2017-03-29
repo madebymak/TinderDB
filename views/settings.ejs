@@ -47,7 +47,11 @@
       <div class="col-sm-12 col-md-12 brd">
         <h3>Change Location:</h3>
         * Please note that you may need to wait 24 hours after changing locations for the potential match feature to work correctly. *</br>
-        New Location: longitude latitutde
+        New Location:
+        <form method="post" action="/location">
+          <input type="text" name="city">
+          <input type="submit" value="change">
+        </form>
       </div>
     </div>
 </body>

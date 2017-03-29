@@ -12,7 +12,7 @@ var fbInfo = require('./fb_auth.js');
 var fbUserId  = fbInfo.userId;
 var fbToken = fbInfo.token;
 
-// // Mock data
+// //Mock data
 // var tinderData = require('./data');
 // var userProfile = tinderData.userProfile;
 // var tinderProfile =tinderData.recommendations;
@@ -24,6 +24,7 @@ var recommendations = [];
 var list = [];
 var sortedList = [];
 
+//load intial profiles
 client.authorize( fbToken, fbUserId, function() {
 
     //calls tinder API 3 times for profiles
@@ -62,10 +63,6 @@ client.authorize( fbToken, fbUserId, function() {
         }
       });
     };
-
-    // client.getRecommendations(10, function(err, data) {
-    //   recommendations = data.results;
-    // });
 
     client.getAccount(function(err, data) {
       userProfile = data.user;
@@ -218,7 +215,10 @@ app.get("/settings", (req, res) => {
   res.render("settings", templateVars);
 });
 
-
+app.post("/location", (req, res) => {
+  //hook up to google maps geocoding API
+  console.log(req.body.city);
+});
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
