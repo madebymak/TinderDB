@@ -12,6 +12,13 @@ var fbInfo = require('./fb_auth.js');
 var fbUserId  = fbInfo.userId;
 var fbToken = fbInfo.token;
 
+//google map geocode
+var geoKey = fbInfo.geoKey;
+var googleMapsClient = require('@google/maps').createClient({
+  key: geoKey
+});
+
+
 // //Mock data
 // var tinderData = require('./data');
 // var userProfile = tinderData.userProfile;
@@ -27,11 +34,12 @@ var sortedList = [];
 //load intial profiles
 client.authorize( fbToken, fbUserId, function() {
 
-    //calls tinder API 3 times for profiles
+    //calls tinder API 5 times for profiles
     for (var i = 0; i < 5; i++) {
       client.getRecommendations(10, function(err, data) {
         var tinderResults = data.results;
         for (var j = 0; j < tinderResults.length; j++) {
+          //adds profles to check for duplicates later
           list.push({
             name : tinderResults[j].name,
             age: getAge(tinderResults[j].birth_date),
@@ -217,7 +225,35 @@ app.get("/settings", (req, res) => {
 
 app.post("/location", (req, res) => {
   //hook up to google maps geocoding API
-  console.log(req.body.city);
+  var city = req.body.city;
+
+  function geoCoord(address) {
+    // return a Promise
+    return new Promise(function(resolve,reject) {
+      googleMapsClient.geocode( { 'address': address}, function(err, res) {
+        if (!err) {
+          resolve(res.json.results[0].geometry.location);
+        } else {
+          reject(err);
+        }
+      });
+    });
+  }
+
+ geoCoord(city)
+ .then(function(val) {
+   console.log(val.lat, val.lng);
+   client.authorize( fbToken, fbUserId, function() {
+     client.updatePosition(val.lng, val.lat, function(err, data) {
+       if (data !== null) {
+         console.log(data);
+         res.redirect('/');
+       } else {
+           console.log('ERROR:', err.status);
+       }
+     });
+   });
+ });
 });
 
 app.listen(PORT, () => {
