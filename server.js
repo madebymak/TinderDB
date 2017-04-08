@@ -39,16 +39,9 @@ client.authorize( fbToken, fbUserId, function() {
       client.getRecommendations(10, function(err, data) {
         var tinderResults = data.results;
         for (var j = 0; j < tinderResults.length; j++) {
-          //adds profles to check for duplicates later
+          //adds profles ids to check for duplicates later
           list.push({
-            name : tinderResults[j].name,
-            age: getAge(tinderResults[j].birth_date),
-            bio: tinderResults[j].bio,
-            photos: tinderResults[j].photos,
-            ping_time: getLastOnline(tinderResults[j].ping_time),
-            distance_mi: tinderResults[j].distance_mi,
             id: tinderResults[j]._id,
-            likes_you: ''
           });
 
           //Checks to see if profile id already exists before pushing
