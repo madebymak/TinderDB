@@ -18,58 +18,53 @@ var googleMapsClient = require('@google/maps').createClient({
   key: geoKey
 });
 
-
-// //Mock data
-// var tinderData = require('./data');
-// var userProfile = tinderData.userProfile;
-// var tinderProfile =tinderData.recommendations;
-
-
 //Tinder Call
-var userProfile = [];
+var userProfile;
 var recommendations = [];
 var list = [];
 var sortedList = [];
 
-//load intial profiles
-client.authorize( fbToken, fbUserId, function() {
+function getProfiles() {
+  return new Promise(function(resolve, reject) {
+    let tempList = [];
 
-    //calls tinder API 5 times for profiles
     for (var i = 0; i < 5; i++) {
-      client.getRecommendations(10, function(err, data) {
-        var tinderResults = data.results;
-        for (var j = 0; j < tinderResults.length; j++) {
-          //adds profles ids to check for duplicates later
-          list.push({
-            id: tinderResults[j]._id,
-          });
+      client.authorize( fbToken, fbUserId, function() {
+        client.getRecommendations(10, function(error, data){
+          let tinderProfiles = data.results;
 
-          //Checks to see if profile id already exists before pushing
-          var found = recommendations.some(function (el) {
-            return el.id === tinderResults[j]._id;
-          });
+          tinderProfiles.forEach(function(profile) {
 
-          if (!found) {
-            recommendations.push({
-              name : tinderResults[j].name,
-              age: getAge(tinderResults[j].birth_date),
-              bio: tinderResults[j].bio,
-              photos: tinderResults[j].photos,
-              ping_time: getLastOnline(tinderResults[j].ping_time),
-              distance_mi: tinderResults[j].distance_mi,
-              id: tinderResults[j]._id,
-              likes_you: ''
+            list.push({
+              id: profile._id
+            })
+
+            var found = recommendations.some(function (el) {
+              return el.id === profile._id;
             });
-          }
-        }
-      });
-    };
 
-    client.getAccount(function(err, data) {
-      userProfile = data.user;
-    });
-  }
-);
+            if (!found) {
+              tempList.push({
+                name : profile.name,
+                age: getAge(profile.birth_date),
+                bio: profile.bio,
+                photos: profile.photos,
+                ping_time: getLastOnline(profile.ping_time),
+                distance_mi: profile.distance_mi,
+                id: profile._id,
+                likes_you: ''
+              });
+            }
+
+          })
+
+        })
+      })
+    }
+    resolve(tempList)
+  })
+};
+
 
 function getAge(dob){
   let todaysDate = new Date();
@@ -106,6 +101,19 @@ function swipeAndRemove(array, property, value) {
   });
 }
 
+client.authorize( fbToken, fbUserId, function() {
+  client.getAccount(function(err, data) {
+    userProfile = data.user;
+  });
+});
+
+if (recommendations != null) {
+  getProfiles()
+    .then(function(x) {
+      recommendations = x;
+    });
+}
+
 app.set("view engine", "ejs");
 
 app.use(express.static(__dirname + '/public'));
@@ -114,6 +122,7 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.get("/", (req, res) => {
+
   console.log('number of profiles:',recommendations.length);
 
   if (sortedList.length === 0) {
@@ -132,7 +141,7 @@ app.get("/", (req, res) => {
     };
 
     var topRec = sortable.filter(function(val) {
-      return val.count >= 3;
+      return val.count >= 5;
     });
 
     console.log(topRec);
@@ -160,6 +169,7 @@ app.get("/", (req, res) => {
         }
       })
     }
+
   }
 
   let templateVars = {
