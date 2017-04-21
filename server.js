@@ -7,6 +7,9 @@ var bodyParser = require('body-parser');
 var tinder = require('./tinder');
 var client = new tinder.TinderClient();
 
+//Helpers
+var helper = require('./helpers.js')
+
 //Facebook Auth
 var fbInfo = require('./fb_auth.js');
 var fbUserId  = fbInfo.userId;
@@ -25,6 +28,7 @@ var list = [];
 var sortedList = [];
 
 function getProfiles() {
+  console.log('running');
   return new Promise(function(resolve, reject) {
     let tempList = [];
 
@@ -46,10 +50,10 @@ function getProfiles() {
             if (!found) {
               tempList.push({
                 name : profile.name,
-                age: getAge(profile.birth_date),
+                age: helper.getAge(profile.birth_date),
                 bio: profile.bio,
                 photos: profile.photos,
-                ping_time: getLastOnline(profile.ping_time),
+                ping_time: helper.getLastOnline(profile.ping_time),
                 distance_mi: profile.distance_mi,
                 id: profile._id,
                 likes_you: ''
@@ -64,42 +68,6 @@ function getProfiles() {
     resolve(tempList)
   })
 };
-
-
-function getAge(dob){
-  let todaysDate = new Date();
-  let profileDate = new Date(dob);
-  var timeDiff = Math.abs(todaysDate.getTime() - profileDate.getTime());
-  var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
-  var diffYears = Math.floor(diffDays/365)
-  return diffYears
-}
-
-function getLastOnline(time) {
-  let result;
-  let currentTime = new Date();
-  let lastActivity = new Date(time);
-  var timeDiff = Math.abs(currentTime.getTime() - lastActivity.getTime());
-  var convertedTime = Math.floor(timeDiff/(1000 * 60 * 60));
-
-  if (convertedTime > 24) {
-    result = 'More than 24 hours ago.';
-  } else if ( convertedTime <= 1) {
-    result = 'Less than an hour ago.';
-  } else {
-    result = convertedTime + ' hours ago.'
-  }
-  return result;
-}
-
-function swipeAndRemove(array, property, value) {
-  array.forEach(function(result, index) {
-    if(result[property] === value) {
-      //Remove from array
-      array.splice(index, 1);
-    }
-  });
-}
 
 client.authorize( fbToken, fbUserId, function() {
   client.getAccount(function(err, data) {
@@ -187,7 +155,7 @@ app.post('/pass', (req, res) => {
     client.pass(profileId, function(err, data) {
       console.log(data.status);
       if (data.status === 200) {
-        swipeAndRemove(sortedList, 'id', profileId);
+        helper.swipeAndRemove(sortedList, 'id', profileId);
         console.log('passed:', profileId);
         res.redirect('/');
       }
@@ -202,7 +170,7 @@ app.post('/like', (req, res) => {
     client.like(profileId, function(err, data) {
       // console.log(data);
       if (data) {
-        swipeAndRemove(sortedList, 'id', profileId);
+        helper.swipeAndRemove(sortedList, 'id', profileId);
         console.log('liked:', profileId);
         res.redirect('/');
       };
@@ -230,20 +198,7 @@ app.post("/location", (req, res) => {
   //hook up to google maps geocoding API
   var city = req.body.city;
 
-  function geoCoord(address) {
-    // return a Promise
-    return new Promise(function(resolve,reject) {
-      googleMapsClient.geocode( { 'address': address}, function(err, res) {
-        if (!err) {
-          resolve(res.json.results[0].geometry.location);
-        } else {
-          reject(err);
-        }
-      });
-    });
-  }
-
- geoCoord(city)
+ helper.geoCoord(city)
  .then(function(val) {
    console.log(val.lat, val.lng);
    client.authorize( fbToken, fbUserId, function() {
