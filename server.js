@@ -28,7 +28,6 @@ var list = [];
 var sortedList = [];
 
 function getProfiles() {
-  console.log('running');
   return new Promise(function(resolve, reject) {
     let tempList = [];
 
@@ -69,18 +68,29 @@ function getProfiles() {
   })
 };
 
+function sortList(a,b) {
+  if (a.likes_you < b.likes_you)
+    return 1;
+  if (a.likes_you > b.likes_you)
+    return -1;
+  return 0;
+}
+
+//loads inital profiles on log in
+if (recommendations.length === 0) {
+  getProfiles()
+    .then(function(x) {
+      recommendations = x;
+      console.log('inital getProfiles running');
+    })
+}
+
+//Loads user info for header
 client.authorize( fbToken, fbUserId, function() {
   client.getAccount(function(err, data) {
     userProfile = data.user;
   });
 });
-
-if (recommendations != null) {
-  getProfiles()
-    .then(function(x) {
-      recommendations = x;
-    });
-}
 
 app.set("view engine", "ejs");
 
@@ -93,13 +103,15 @@ app.get("/", (req, res) => {
 
   console.log('number of profiles:',recommendations.length);
 
-  if (sortedList.length === 0) {
-    /// Checks for matches
+  if (recommendations.length !== 0) {
+
+    //counts how many times each id shows up in list array
     var counts = [];
     list.forEach(function(x) {
       counts[x.id] = (counts[x.id] || 0)+1;
     });
 
+    //stores the id and count in a new array
     var sortable = [];
     for (var x in counts) {
       sortable.push({
@@ -108,41 +120,27 @@ app.get("/", (req, res) => {
       })
     };
 
+    //stores ids that show up 5 times
     var topRec = sortable.filter(function(val) {
-      return val.count >= 5;
+      return val.count === 5;
     });
 
     console.log(topRec);
 
-    var alreadyMatched = sortable.sort(function (a,b) {
-      return b.count - a.count;
-    });
+    recommendations.forEach(function(recProfile) {
+      for (var n = 0; n < topRec.length; n++) {
 
-    // console.log(alreadyMatched);
-
-    for (var i = 0; i < alreadyMatched.length; i++) {
-      recommendations.forEach(function(x) {
-
-        if (alreadyMatched[i].id === x.id) {
-          sortedList.push(x);
-        };
-
-      })
-    }
-
-    for (var p = 0; p < topRec.length; p++) {
-      sortedList.forEach(function(n) {
-        if (topRec[p].id === n.id) {
-          n.likes_you = '*';
+        if (topRec[n].id === recProfile.id) {
+          recProfile.likes_you = "*"
         }
-      })
-    }
+      }
+    })
 
   }
 
   let templateVars = {
     user: userProfile,
-    profiles: sortedList
+    profiles: recommendations.sort(sortList)
   };
 
   res.render("index", templateVars);
@@ -155,7 +153,7 @@ app.post('/pass', (req, res) => {
     client.pass(profileId, function(err, data) {
       console.log(data.status);
       if (data.status === 200) {
-        helper.swipeAndRemove(sortedList, 'id', profileId);
+        helper.swipeAndRemove(recommendations, 'id', profileId);
         console.log('passed:', profileId);
         res.redirect('/');
       }
@@ -170,7 +168,7 @@ app.post('/like', (req, res) => {
     client.like(profileId, function(err, data) {
       // console.log(data);
       if (data) {
-        helper.swipeAndRemove(sortedList, 'id', profileId);
+        helper.swipeAndRemove(recommendations, 'id', profileId);
         console.log('liked:', profileId);
         res.redirect('/');
       };
@@ -182,7 +180,7 @@ app.get("/show/:id", (req, res) => {
   let templateVars = {
     user: userProfile,
     pos: req.params.id,
-    test: sortedList
+    test: recommendations
   };
   res.render("show", templateVars);
 });
@@ -205,9 +203,16 @@ app.post("/location", (req, res) => {
      client.updatePosition(val.lng, val.lat, function(err, data) {
        if (data !== null) {
          console.log(data);
-         res.redirect('/');
+         getProfiles()
+           .then(function(x) {
+             recommendations = x;
+             console.log('ran again');
+           });
+        setTimeout(function() {
+          res.redirect('/');
+        }, 3000)
        } else {
-           console.log('ERROR:', err.status);
+         console.log('ERROR:', err.status);
        }
      });
    });
