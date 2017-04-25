@@ -34,6 +34,12 @@ function getProfiles() {
     for (var i = 0; i < 5; i++) {
       client.authorize( fbToken, fbUserId, function() {
         client.getRecommendations(10, function(error, data){
+
+          while (data.results === null) {
+            console.log('data is null');
+            continue;
+          }
+
           let tinderProfiles = data.results;
 
           tinderProfiles.forEach(function(profile) {
