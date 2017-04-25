@@ -35,10 +35,11 @@ function getProfiles() {
       client.authorize( fbToken, fbUserId, function() {
         client.getRecommendations(10, function(error, data){
 
-          while (data.results === null) {
-            console.log('data is null');
-            continue;
-          }
+          //doesn't work
+          // while (data.results === null) {
+          //   console.log('data is null');
+          //   continue;
+          // }
 
           let tinderProfiles = data.results;
 
@@ -207,8 +208,10 @@ app.post("/location", (req, res) => {
    console.log(val.lat, val.lng);
    client.authorize( fbToken, fbUserId, function() {
      client.updatePosition(val.lng, val.lat, function(err, data) {
-       if (data !== null) {
-         console.log(data);
+       console.log(data);
+       if (data.error) {
+         res.redirect('/error');
+       } else if (data.status === 200) {
          getProfiles()
            .then(function(x) {
              recommendations = x;
@@ -223,6 +226,10 @@ app.post("/location", (req, res) => {
      });
    });
  });
+});
+
+app.get("/error", (req, res) => {
+  res.send('Error');
 });
 
 app.listen(PORT, () => {
