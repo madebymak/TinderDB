@@ -35,38 +35,36 @@ function getProfiles() {
       client.authorize( fbToken, fbUserId, function() {
         client.getRecommendations(10, function(error, data){
 
-          //doesn't work
-          // while (data.results === null) {
-          //   console.log('data is null');
-          //   continue;
-          // }
+          if (data) {
+            let tinderProfiles = data.results;
 
-          let tinderProfiles = data.results;
+            tinderProfiles.forEach(function(profile) {
 
-          tinderProfiles.forEach(function(profile) {
+              list.push({
+                id: profile._id
+              })
 
-            list.push({
-              id: profile._id
-            })
-
-            var found = recommendations.some(function (el) {
-              return el.id === profile._id;
-            });
-
-            if (!found) {
-              tempList.push({
-                name : profile.name,
-                age: helper.getAge(profile.birth_date),
-                bio: profile.bio,
-                photos: profile.photos,
-                ping_time: helper.getLastOnline(profile.ping_time),
-                distance_mi: profile.distance_mi,
-                id: profile._id,
-                likes_you: ''
+              var found = recommendations.some(function (el) {
+                return el.id === profile._id;
               });
-            }
 
-          })
+              if (!found) {
+                tempList.push({
+                  name : profile.name,
+                  age: helper.getAge(profile.birth_date),
+                  bio: profile.bio,
+                  photos: profile.photos,
+                  ping_time: helper.getLastOnline(profile.ping_time),
+                  distance_mi: profile.distance_mi,
+                  id: profile._id,
+                  likes_you: ''
+                });
+              }
+
+            })
+          } else {
+            console.log(error);
+          }
 
         })
       })
