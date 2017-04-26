@@ -151,6 +151,18 @@ app.get("/", (req, res) => {
   res.render("index", templateVars);
 });
 
+app.get('/refresh', (req, res) => {
+  getProfiles()
+    .then(function(x) {
+      recommendations = x;
+      console.log('refreshed');
+    });
+    setTimeout(function() {
+      res.redirect('/');
+    }, 2000)
+});
+
+
 app.post('/pass', (req, res) => {
   var profileId = req.body.id;
 
